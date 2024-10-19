@@ -41,5 +41,19 @@ CHIP ALU {
         ng;      // if (out < 0)  equals 1, else 0
 
     PARTS:
-    //// Replace this comment with your code.
+	Mux16	(a=x, b[0..0]=false, sel=zx, out=xmbzero); //set x to zero if  zx flag is set
+	Mux16	(a=y, b[0..0]=false, sel=zy, out=ymbzero); //set y to zero if  zy flag is set
+	Not16	(in=xmbzero, out=notx);
+	Not16	(in=ymbzero, out=noty);
+	Mux16	(a=xmbzero, b=notx, sel=nx, out=xmbor); //apply bitwise not for x
+	Mux16	(a=ymbzero, b=noty, sel=ny, out=ymbor); //apply bitwise not for y
+	Add16	(a=xmbor, b=ymbor, out=xplusy);
+	And16	(a=xmbor, b=ymbor, out=xandy);
+	Mux16	(a=xandy, b=xplusy, sel=f, out=almostout);
+	Not16	(in=almostout, out=negout);
+	Mux16	(a=almostout, b=negout, sel=no, out=out, out[15]=ng, out[0..7]=outfirst, out[8..15]=outsec);
+	Or8Way	(in=outfirst, out=firsthalfzero);
+	Or8Way	(in=outsec, out=secondhalfzero);
+	Or		(a=firsthalfzero, b=secondhalfzero, out=notzr);
+	Not		(in=notzr, out=zr);
 }
