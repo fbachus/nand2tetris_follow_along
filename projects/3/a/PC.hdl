@@ -14,11 +14,10 @@ CHIP PC {
     OUT out[16];
     
     PARTS:
-    // Register in the beginning because it uses DFF and in all cases we get out(t+1)
-    Register    (in=mbzeroed, load=true, out=regvalue, out=out);
     // reset overrides load overrides inc, therefore incrementation comes first
     Inc16       (in=regvalue, out=outinc);
     Mux16       (a=regvalue, b=outinc, sel=inc, out=mbinced);
     Mux16       (a=mbinced, b=in, sel=load, out=mbloaded);
     Mux16       (a=mbloaded, b[0..0]=false, sel=reset, out=mbzeroed);
+    Register    (in=mbzeroed, load=true, out=regvalue, out=out);
 }
